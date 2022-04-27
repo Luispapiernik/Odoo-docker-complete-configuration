@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  odoo:
+    image: odoo:15.0
+    container_name: ${PROJECT_NAME}-odoo
+    env_file: odoo.env
+    depends_on:
+      - ${PROJECT_NAME}-db
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config/:/etc/odoo/
+      - ./addons/:/mnt/extra-addons/
+  postgres:
+    image: postgres:14
+    container_name: ${PROJECT_NAME}-db
+    env_file: postgres.env
+    volumes:
+      - odoo-db-data:${PGDATA}
+    restart: always
+
+volumes:
+  odoo-db-data:
+    name: ${DB_VOLUME}
+    external: true
+  odoo-web-data:
+    name: ${WEB_VOLUME}
+    external: true
